@@ -1,153 +1,43 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>携华出行每日分析</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background: #f5f7fa;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff8c5a 100%);
-            color: white;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
-        }
-        
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-        
-        .date-selector {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .date-selector label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .date-selector select {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-            transition: background 0.2s;
-        }
-        
-        .date-selector select:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .date-selector select option {
-            background: #ff6b35;
-            color: white;
-        }
-        
-        .content-wrapper {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .report-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #666;
-        }
-        
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #ff6b35;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>携华出行每日数据分析</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+  .header { background: #fff; border-bottom: 1px solid #e8e8e8; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header-title { font-size: 18px; font-weight: 600; color: #262626; }
+  .date-selector { display: flex; align-items: center; gap: 8px; }
+  .date-selector label { font-size: 14px; color: #666; }
+  .date-selector select { padding: 6px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; color: #262626; background: #fff; cursor: pointer; }
+  .iframe-container { width: 100%; height: calc(100vh - 60px); border: none; }
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>携华出行每日分析</h1>
-        <div class="date-selector">
-            <label>选择日期：</label>
-            <select id="dateSelect">
-                <option value="report-20260707.html">2026-07-07（周二）</option>
-                <option value="report-20260706.html">2026-07-06（周一）</option>
-                <option value="report-20260705.html">2026-07-05（周日）</option>
-                <option value="report-20260704.html">2026-07-04（周六）</option>
-                <option value="report-20260703.html">2026-07-03（周五）</option>
-                <option value="report-20260702.html">2026-07-02（周四）</option>
-                <option value="report-20260701.html">2026-07-01（周三）</option>
-            </select>
-        </div>
-    </div>
-    
-    <div class="content-wrapper">
-        <div class="loading" id="loading">
-            <div class="loading-spinner"></div>
-            <div>加载中...</div>
-        </div>
-        <iframe class="report-frame" id="reportFrame" onload="hideLoading()"></iframe>
-    </div>
-
-    <script>
-        const dateSelect = document.getElementById('dateSelect');
-        const reportFrame = document.getElementById('reportFrame');
-        const loading = document.getElementById('loading');
-        
-        function hideLoading() {
-            loading.style.display = 'none';
-        }
-        
-        function loadReport(filename) {
-            loading.style.display = 'block';
-            reportFrame.src = filename;
-        }
-        
-        dateSelect.addEventListener('change', function() {
-            loadReport(this.value);
-        });
-        
-        // 初始加载
-        loadReport(dateSelect.value);
-    </script>
+<div class="header">
+  <div class="header-title">携华出行每日数据分析看板</div>
+  <div class="date-selector">
+    <label>选择日期：</label>
+    <select id="dateSelect" onchange="loadReport()">
+      <option value="report-20260707.html" selected>7月7日（2026-07-07）</option>
+      <option value="report-20260706.html">7月6日（2026-07-06）</option>
+      <option value="report-20260705.html">7月5日（2026-07-05）</option>
+      <option value="report-20260704.html">7月4日（2026-07-04）</option>
+      <option value="report-20260703.html">7月3日（2026-07-03）</option>
+      <option value="report-20260702.html">7月2日（2026-07-02）</option>
+      <option value="report-20260701.html">7月1日（2026-07-01）</option>
+    </select>
+  </div>
+</div>
+<iframe id="reportFrame" class="iframe-container" src="report-20260707.html"></iframe>
+<script>
+function loadReport() {
+  var select = document.getElementById('dateSelect');
+  var frame = document.getElementById('reportFrame');
+  frame.src = select.value;
+}
+</script>
 </body>
 </html>
